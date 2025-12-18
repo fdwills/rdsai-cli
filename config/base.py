@@ -21,7 +21,7 @@ DatabaseConnectionContext = ConnectionContext
 
 # ========== Version Constants ==========
 
-VERSION = "v0.1.1"
+VERSION = "v0.1.2"
 USER_AGENT = f"RDSAI_CLI/{VERSION}"
 
 

@@ -13,47 +13,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security enhancements
 - Diagnostic report export
 
-## [v0.1.1] - 2025-12-17
+## [v0.1.2] - 2025-12-17
 
 ### Added
-- Initial public release
+
+#### Core Features
 - **AI-powered MySQL assistant** with natural language support (English/中文)
-- **14+ diagnostic tools**:
-  - TableStructure, TableIndex, TableStatus
-  - MySQLExplain, SlowLog, ShowProcess
-  - InnodbStatus, Transaction
-  - InformationSchema, PerformanceSchema, PerfStatistics
-  - KernelParameter, ReplicaStatus
-  - DDLExecutor
-- **Multi-LLM support**: Qwen, OpenAI, DeepSeek, Anthropic, Gemini, OpenAI-compatible
-- **Model management**: Switch models via `/model` command
-- **Memory system**: Schema learning and context persistence
-- **Interactive TUI shell** with Rich formatting
-- **Smart SQL detection**: Auto-detect SQL vs natural language
+- **Interactive TUI shell** with Rich formatting and modern terminal UI
+- **Smart SQL detection**: Auto-detect SQL vs natural language input
 - **SQL completer**: Intelligent SQL autocomplete with schema awareness
-- **Query history**: Track and review SQL execution history via `/history`
-- **Database Schema Analysis** (`/research`): Comprehensive schema analysis reports with AI-powered review, index optimization suggestions, compliance checking against Alibaba Database Development Standards
-- **Performance Benchmarking** (`/benchmark`): AI-powered sysbench performance testing with automated workflow (prepare → run → cleanup) and comprehensive analysis reports
-- **MCP Integration**: Extend capabilities by connecting to external MCP servers, including Alibaba Cloud RDS OpenAPI for cloud RDS instance management
-- **Instant SQL Result Explanation**: Press `Ctrl+E` after any SQL query to get AI-powered explanations of results or errors
+- **Query history**: Track and review SQL execution history via `/history` command
+- **Vertical format support**: Use `\G` suffix for vertical table display
+
+#### AI & LLM Integration
+- **Multi-LLM support**: Qwen, OpenAI, DeepSeek, Anthropic, Gemini, OpenAI-compatible endpoints
+- **Model management**: Switch between models via `/model` command
+- **Memory system**: Schema learning and context persistence across sessions
+- **Thinking mode**: Toggle transparent reasoning display with `Tab` key (when buffer is empty)
+- **Instant SQL Result Explanation**: Press `Ctrl+E` after any SQL query to get AI-powered explanations
   - Dedicated explain agent for SQL result analysis
   - Automatic hint display after query execution (`💡 Ctrl+E: Explain result` or `💡 Ctrl+E: Explain error`)
   - Supports both successful queries and error messages
   - Concise, actionable explanations in user's configured language (English/中文)
   - Works seamlessly with query history and context injection
-- **Safety features**: Read-only default, DDL/DML confirmation
-- **YOLO mode**: Auto-approve for trusted environments
+
+#### Diagnostic Tools (14+ tools)
+- **Table Analysis**: TableStructure, TableIndex, TableStatus
+- **Query Analysis**: MySQLExplain, SlowLog, ShowProcess
+- **Transaction & Locking**: InnodbStatus, Transaction
+- **Schema & Performance**: InformationSchema, PerformanceSchema, PerfStatistics
+- **System**: KernelParameter, ReplicaStatus
+- **DDL Execution**: DDLExecutor
+
+#### Database Management
+- **Database Schema Analysis** (`/research`): Comprehensive schema analysis reports with:
+  - AI-powered schema review
+  - Index optimization suggestions
+  - Compliance checking against Alibaba Database Development Standards
+  - Actionable recommendations
+- **Performance Benchmarking** (`/benchmark`): AI-powered sysbench performance testing with:
+  - Automated workflow (prepare → run → cleanup)
+  - Comprehensive analysis reports
+  - MySQL configuration analysis
+  - InnoDB status analysis
+  - Bottleneck identification and optimization recommendations
+- **Connection management**: `/connect` and `/disconnect` commands for database connection management
+- **Transaction safety**: Warnings for uncommitted transactions on exit
+
+#### Extensibility
+- **MCP Integration**: Extend capabilities by connecting to external MCP servers
+  - Alibaba Cloud RDS OpenAPI for cloud RDS instance management
+  - Monitoring and operations support
+  - Custom MCP server integration
+
+#### Security & Safety
+- **Read-only mode by default**: DDL/DML operations require explicit confirmation
+- **YOLO mode**: Auto-approve for trusted environments (toggle via `/yolo`)
 - **SSL/TLS support**: Full SSL configuration options (CA, client cert, key, mode)
 - **Transaction safety**: Warnings for uncommitted transactions on exit
-- `/setup` wizard for LLM configuration
-- `/init` and `/memory` for knowledge management
-- `/connect` and `/disconnect` for database connection management
-- Vertical format support (`\G`) for SQL results
-- Keyboard shortcuts:
-  - `Ctrl+E`: Explain SQL result
-  - `Ctrl+J`: Insert newline
-  - `Ctrl+C`: Exit/interrupt
-  - `Tab`: Toggle thinking mode (when buffer is empty)
+- **Credential storage**: Secure storage in `~/.rdsai-cli/config.json` with proper OS permissions
+
+#### Commands & Shortcuts
+- `/setup`: Interactive wizard for LLM configuration
+- `/init` and `/memory`: Knowledge management commands
+- `/connect` and `/disconnect`: Database connection management
+- `/model`: Model management (list/use/delete/info)
+- `/research`: Database schema analysis
+- `/benchmark`: Performance benchmarking
+- `/mcp`: MCP server management
+- `/yolo`: Toggle YOLO mode
+- `/history`: View SQL query execution history
+- `/clear` and `/compact`: Context management
+- `/help`: Show help and current status
+- `/version`: Show CLI version
+
+#### Keyboard Shortcuts
+- `Ctrl+E`: Explain SQL result
+- `Ctrl+J`: Insert newline
+- `Ctrl+C`: Exit/interrupt
+- `Tab`: Toggle thinking mode (when buffer is empty)
 
 ### Security
 - Read-only mode by default
@@ -62,6 +100,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Credential storage in `~/.rdsai-cli/config.json` with proper OS permissions
 
 ---
-
-[Unreleased]: https://github.com/aliyun/rdsai-cli/compare/v0.1.1...HEAD
-[0.1.1]: https://github.com/aliyun/rdsai-cli/releases/tag/v0.1.1
