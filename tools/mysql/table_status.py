@@ -1,7 +1,7 @@
 """MySQL table status tool for analyzing table statistics."""
 
 from pathlib import Path
-from typing import Any, Dict, Optional, override
+from typing import Any, Optional, override
 
 from pydantic import BaseModel, Field
 
@@ -30,7 +30,7 @@ class TableStatus(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Execute SHOW TABLE STATUS to get table statistics."""
         from database import get_current_database
         # Determine database to use

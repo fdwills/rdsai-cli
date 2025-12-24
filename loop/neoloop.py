@@ -169,7 +169,7 @@ class NeoLoop(Loop):
         """Set the yolo mode (auto-approve all actions)."""
         self._runtime.yolo = yolo
 
-    def switch_model(self, llm: "LLM") -> None:
+    def switch_model(self, llm: LLM) -> None:
         """Switch to a different model at runtime.
 
         Args:

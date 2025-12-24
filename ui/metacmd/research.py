@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from rich.console import Group
 from rich.live import Live
@@ -169,9 +169,9 @@ async def research(app: ShellREPL, args: list[str]):
 
 
 async def _explore_database(
-        app: "ShellREPL",
+        app: ShellREPL,
         database: str,
-        filter_tables: List[str],
+        filter_tables: list[str],
 ) -> tuple[DatabaseSchemaSnapshot | None, int]:
     """Explore database schema with progress display.
 

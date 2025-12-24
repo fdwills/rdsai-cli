@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, Dict, Tuple
+from typing import Any
 
 from rich.table import Table
 from rich.text import Text
@@ -184,7 +184,7 @@ class ConnectionInfoFormatter:
     """Formats database connection information."""
 
     @staticmethod
-    def format_connection_info(info: Dict[str, Any]) -> None:
+    def format_connection_info(info: dict[str, Any]) -> None:
         """Display connection information in a table."""
         if not info.get('connected'):
             console.print("[yellow]Not connected to any database.[/yellow]")
@@ -231,7 +231,7 @@ class SchemaFormatter:
     """Formats database schema information."""
 
     @staticmethod
-    def format_database_list(databases: List[str]) -> None:
+    def format_database_list(databases: list[str]) -> None:
         """Display list of databases."""
         if not databases:
             console.print("[yellow]No databases found.[/yellow]")
@@ -261,7 +261,7 @@ class SchemaFormatter:
         console.print(table)
 
     @staticmethod
-    def format_table_structure(table_name: str, structure: List[Tuple[Any, ...]]) -> None:
+    def format_table_structure(table_name: str, structure: list[tuple[Any, ...]]) -> None:
         """Display table structure information."""
         if not structure:
             console.print(f"[yellow]No structure information available for table '{table_name}'.[/yellow]")
@@ -307,7 +307,7 @@ class HistoryFormatter:
     """Formats SQL execution history."""
 
     @staticmethod
-    def format_history(history_entries: List[Dict[str, Any]], limit: int = 10) -> None:
+    def format_history(history_entries: list[dict[str, Any]], limit: int = 10) -> None:
         """Display SQL execution history."""
         if not history_entries:
             console.print("[yellow]No SQL history available.[/yellow]")
@@ -361,7 +361,7 @@ def format_and_display_result(result: QueryResult, sql: str = "", use_vertical: 
     DatabaseResultFormatter.format_query_result(result, sql, use_vertical)
 
 
-def display_connection_info(info: Dict[str, Any]) -> None:
+def display_connection_info(info: dict[str, Any]) -> None:
     """Convenience function to display connection information."""
     ConnectionInfoFormatter.format_connection_info(info)
 

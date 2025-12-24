@@ -4,7 +4,7 @@ import asyncio
 import re
 import shutil
 from abc import abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -33,7 +33,7 @@ class SysbenchToolBase(BaseTool):
             raise ValueError("No database connection available. Please connect to a database first.")
         return db_service
 
-    def _get_connection_info(self) -> Dict[str, Any]:
+    def _get_connection_info(self) -> dict[str, Any]:
         """Get database connection information for sysbench."""
         db_service = self._get_database_service()
         conn_info = db_service.get_connection_info()
@@ -196,7 +196,7 @@ class SysbenchToolBase(BaseTool):
                         pass
             raise ValueError(f"Failed to execute sysbench command: {e}")
 
-    def _parse_sysbench_output(self, stdout: str, stderr: str) -> Dict[str, Any]:
+    def _parse_sysbench_output(self, stdout: str, stderr: str) -> dict[str, Any]:
         """Parse sysbench output and extract key metrics.
 
         Args:
@@ -238,11 +238,11 @@ class SysbenchToolBase(BaseTool):
         return result
 
     @abstractmethod
-    async def _execute_tool(self, params: BaseModel) -> Dict[str, Any]:
+    async def _execute_tool(self, params: BaseModel) -> dict[str, Any]:
         """Execute the specific tool logic. Must be implemented by subclasses."""
         pass
 
-    def _format_result_output(self, result: Dict[str, Any]) -> str:
+    def _format_result_output(self, result: dict[str, Any]) -> str:
         """Format tool result for output.
 
         Args:

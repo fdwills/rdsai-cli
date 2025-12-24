@@ -1,7 +1,7 @@
 """Sysbench run tool for executing performance tests."""
 
 from pathlib import Path
-from typing import Any, Dict, override
+from typing import Any, override
 
 from pydantic import BaseModel, Field
 
@@ -64,7 +64,7 @@ class SysbenchRun(SysbenchToolBase):
     def __init__(self, builtin_args: BuiltinSystemPromptArgs, **kwargs: Any) -> None:
         super().__init__(builtin_args, **kwargs)
 
-    def _build_run_kwargs(self, params: Params) -> Dict[str, Any]:
+    def _build_run_kwargs(self, params: Params) -> dict[str, Any]:
         """Build keyword arguments for sysbench run command.
 
         Args:
@@ -107,7 +107,7 @@ class SysbenchRun(SysbenchToolBase):
             return max((params.events // 100) + 30, 60)
         return None
 
-    def _build_result_message(self, params: Params, metrics: Dict[str, Any]) -> str:
+    def _build_result_message(self, params: Params, metrics: dict[str, Any]) -> str:
         """Build result message from parameters and metrics.
 
         Args:
@@ -142,7 +142,7 @@ class SysbenchRun(SysbenchToolBase):
         return message
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Execute sysbench run command."""
         try:
             # Ensure either time or events is set

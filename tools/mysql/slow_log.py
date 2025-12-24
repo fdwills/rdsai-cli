@@ -1,7 +1,7 @@
 """MySQL slow log tool for analyzing slow query performance."""
 
 from pathlib import Path
-from typing import Any, Dict, Optional, override
+from typing import Any, Optional, override
 
 from pydantic import BaseModel, Field
 
@@ -36,7 +36,7 @@ class SlowLog(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Query MySQL slow log information from mysql.slow_log table."""
         # Build the SQL query
         sql = """

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import re
 from threading import Lock
-from typing import TYPE_CHECKING, Generator, Optional, override
+from typing import TYPE_CHECKING, Optional, override
+from collections.abc import Generator
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.document import Document

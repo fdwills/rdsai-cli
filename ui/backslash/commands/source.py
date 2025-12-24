@@ -61,7 +61,7 @@ def cmd_source(ctx: CommandContext) -> CommandResult | None:
 
 
 def _execute_script(
-    db_service: "DatabaseService",
+    db_service: DatabaseService,
     content: str,
     filename: str,
 ) -> CommandResult:

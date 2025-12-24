@@ -1,7 +1,7 @@
 """MySQL replica status tool for monitoring replication."""
 
 from pathlib import Path
-from typing import Any, Dict, override
+from typing import Any, override
 
 from pydantic import BaseModel
 
@@ -24,7 +24,7 @@ class ReplicaStatus(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Execute SHOW SLAVE STATUS to get replication information."""
         columns, rows = self._execute_query("SHOW SLAVE STATUS")
 

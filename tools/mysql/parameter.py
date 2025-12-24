@@ -1,7 +1,7 @@
 """MySQL parameter tool for querying system variables."""
 
 from pathlib import Path
-from typing import Any, Dict, override
+from typing import Any, override
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +23,7 @@ class KernelParameter(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Execute SHOW VARIABLES to get parameter information."""
         if not params.param_name.strip():
             return {"error": "Parameter name is required", "brief": "Parameter name is required"}

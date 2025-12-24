@@ -26,7 +26,7 @@ class QueryHistoryEntry:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> 'QueryHistoryEntry':
+    def from_dict(cls, data: dict[str, Any]) -> QueryHistoryEntry:
         """Create from dictionary representation."""
         return cls(**data)
 
@@ -139,7 +139,7 @@ class QueryHistory:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> 'QueryHistory':
+    def from_dict(cls, data: dict[str, Any]) -> QueryHistory:
         """Import history from dictionary format."""
         max_entries = data.get('max_entries', 100)
         instance = cls(max_entries=max_entries)

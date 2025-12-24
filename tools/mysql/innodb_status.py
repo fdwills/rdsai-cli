@@ -1,7 +1,7 @@
 """MySQL InnoDB status tool for monitoring InnoDB engine status."""
 
 from pathlib import Path
-from typing import Any, Dict, override
+from typing import Any, override
 import re
 
 from pydantic import BaseModel
@@ -40,7 +40,7 @@ _LOW_PRIORITY_SECTIONS = {
 _MAX_OUTPUT_SIZE = 4000
 
 
-def _parse_innodb_sections(status_text: str) -> Dict[str, str]:
+def _parse_innodb_sections(status_text: str) -> dict[str, str]:
     """Parse InnoDB status into named sections.
 
     InnoDB status format uses dashes and section headers like:
@@ -49,7 +49,7 @@ def _parse_innodb_sections(status_text: str) -> Dict[str, str]:
     --------
     content...
     """
-    sections: Dict[str, str] = {}
+    sections: dict[str, str] = {}
 
     # Pattern to match section headers
     # Sections are delimited by lines of dashes with section name between
@@ -191,7 +191,7 @@ def _extract_log_summary(content: str) -> str:
     return '\n'.join(key_metrics[:6]) if key_metrics else content[:200]
 
 
-def _build_optimized_output(sections: Dict[str, str]) -> str:
+def _build_optimized_output(sections: dict[str, str]) -> str:
     """Build optimized output with key sections summarized."""
     output_parts = []
 
@@ -250,7 +250,7 @@ class InnodbStatus(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Execute SHOW ENGINE INNODB STATUS with optimized output."""
         columns, rows = self._execute_query("SHOW ENGINE INNODB STATUS")
 

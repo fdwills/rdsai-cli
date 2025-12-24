@@ -1,7 +1,7 @@
 """MySQL information_schema tool for querying database metadata."""
 
 from pathlib import Path
-from typing import Any, Dict, Optional, override
+from typing import Any, Optional, override
 
 from pydantic import BaseModel, Field
 
@@ -30,7 +30,7 @@ class InformationSchema(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Query information_schema for various database metadata."""
         info_type = params.info_type or "tables"
 

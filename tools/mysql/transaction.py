@@ -1,7 +1,7 @@
 """MySQL transaction tool for diagnosing transaction and lock issues."""
 
 from pathlib import Path
-from typing import Any, Dict, Optional, override
+from typing import Any, Optional, override
 
 from pydantic import BaseModel, Field
 
@@ -26,7 +26,7 @@ class Transaction(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Diagnose transaction and lock related information."""
         info_type = params.info_type or "trx"
 

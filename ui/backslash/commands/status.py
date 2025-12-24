@@ -91,7 +91,7 @@ def cmd_status(ctx: CommandContext) -> CommandResult | None:
     return None
 
 
-def _get_current_user(db_service: "DatabaseService") -> str:
+def _get_current_user(db_service: DatabaseService) -> str:
     """Get current user from server."""
     try:
         client = db_service.get_active_connection()
@@ -104,7 +104,7 @@ def _get_current_user(db_service: "DatabaseService") -> str:
         return "N/A"
 
 
-def _get_server_version(db_service: "DatabaseService") -> str:
+def _get_server_version(db_service: DatabaseService) -> str:
     """Get server version."""
     try:
         client = db_service.get_active_connection()
@@ -117,7 +117,7 @@ def _get_server_version(db_service: "DatabaseService") -> str:
         return "N/A"
 
 
-def _get_protocol_version(db_service: "DatabaseService") -> str | None:
+def _get_protocol_version(db_service: DatabaseService) -> str | None:
     """Get protocol version."""
     try:
         client = db_service.get_active_connection()
@@ -131,7 +131,7 @@ def _get_protocol_version(db_service: "DatabaseService") -> str | None:
         return None
 
 
-def _get_ssl_status(db_service: "DatabaseService") -> str:
+def _get_ssl_status(db_service: DatabaseService) -> str:
     """Get SSL connection status."""
     try:
         client = db_service.get_active_connection()
@@ -146,7 +146,7 @@ def _get_ssl_status(db_service: "DatabaseService") -> str:
         return "Not in use"
 
 
-def _get_character_sets(db_service: "DatabaseService") -> dict[str, str]:
+def _get_character_sets(db_service: DatabaseService) -> dict[str, str]:
     """Get character set information."""
     try:
         client = db_service.get_active_connection()
@@ -169,7 +169,7 @@ def _get_character_sets(db_service: "DatabaseService") -> dict[str, str]:
         return {}
 
 
-def _get_server_stats(db_service: "DatabaseService") -> dict[str, int]:
+def _get_server_stats(db_service: DatabaseService) -> dict[str, int]:
     """Get server statistics."""
     try:
         client = db_service.get_active_connection()

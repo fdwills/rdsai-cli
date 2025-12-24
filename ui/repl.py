@@ -31,7 +31,7 @@ from utils.term import ensure_new_line
 class ShellREPL:
     """Main interactive shell REPL."""
 
-    _current: "ShellREPL | None" = None
+    _current: ShellREPL | None = None
 
     def __init__(self, loop: Loop, welcome_info: list[WelcomeInfoItem] | None = None,
                  db_service: DatabaseService | None = None,
@@ -55,7 +55,7 @@ class ShellREPL:
         return cls._current is not None and cls._current.llm_configured
 
     @classmethod
-    def _set_current(cls, repl: "ShellREPL | None") -> None:
+    def _set_current(cls, repl: ShellREPL | None) -> None:
         """Set the current REPL instance (internal use only)."""
         cls._current = repl
 

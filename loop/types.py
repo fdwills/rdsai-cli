@@ -1,14 +1,15 @@
 """Core type definitions for the loop system."""
 
 from __future__ import annotations
-from typing import TypeVar, Any, Union, List, Dict
-from typing import Literal, ClassVar, Type
+from typing import TypeVar, Any, Union
+from typing import Literal, ClassVar
 from pydantic import BaseModel
+import builtins
 
 
 # --- Basic Type Aliases ---
 T = TypeVar("T", bound=BaseModel)
-JsonType = Union[Dict[str, Any], List[Any], str, int, float, bool, None]
+JsonType = Union[dict[str, Any], list[Any], str, int, float, bool, None]
 
 
 # --- Base Mixins ---
@@ -49,7 +50,7 @@ class ImageURLPart(BaseModel, MergeableMixin):
     type: Literal["image_url"] = "image_url"
     image_url: ImageURL | dict
 
-    ImageURL: ClassVar[Type[ImageURL]] = ImageURL
+    ImageURL: ClassVar[builtins.type[ImageURL]] = ImageURL
 
 
 class AudioURL(BaseModel):
@@ -62,7 +63,7 @@ class AudioURLPart(BaseModel, MergeableMixin):
     type: Literal["audio_url"] = "audio_url"
     audio_url: AudioURL | dict
 
-    AudioURL: ClassVar[Type[AudioURL]] = AudioURL
+    AudioURL: ClassVar[builtins.type[AudioURL]] = AudioURL
 
 
 class ThinkPart(BaseModel, MergeableMixin):
@@ -83,7 +84,7 @@ class ToolCall(BaseModel, MergeableMixin):
     type: Literal["function"] = "function"
     function: FunctionBody | dict
 
-    FunctionBody: ClassVar[Type[FunctionBody]] = FunctionBody
+    FunctionBody: ClassVar[builtins.type[FunctionBody]] = FunctionBody
 
 
 class ToolCallPart(BaseModel, MergeableMixin):
