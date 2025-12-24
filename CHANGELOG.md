@@ -13,7 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Security enhancements
 - Diagnostic report export
 
+## [v0.1.4] - 2025-12-24
+
+### Changed
+- **Dependencies**: Remove unused aiofiles dependency to reduce package size
+
+### Documentation
+- Add Python version and license badges to README
+- Update README demo examples and usage instructions
+
 ## [v0.1.3] - 2025-12-21
+
+### Added
+- **Configuration**: Dynamic version detection from package metadata or pyproject.toml
+  - Automatically reads version information at runtime
+  - Adds "v" prefix to version number for consistent formatting
+  - Falls back to "UNKNOWN" when version cannot be determined
+  - Updates user agent string to include dynamic version information
 
 ### Fixed
 - **Security**: Hide database password input in CLI (previously visible in terminal)
@@ -21,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **UX**: Update prompt display when refreshing database connection
+- **Dependencies**: Remove unused aiofiles dependency to reduce package size
 - **Code Quality**: 
   - Add pylint configuration file for optimized code checking rules
   - Adjust pylint configuration rules and restrictions
@@ -35,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - Update README_zh.md project description
 - Add Chinese README and document translations
+- Add Python version and license badges to README
+- Update README demo examples and usage instructions
 
 ## [v0.1.2] - 2025-12-17
 
