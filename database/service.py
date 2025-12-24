@@ -12,7 +12,8 @@ import getpass
 import re
 from datetime import datetime
 from threading import Lock
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
+from collections.abc import Callable
 
 from .types import (
     ConnectionConfig,
@@ -36,15 +37,15 @@ if TYPE_CHECKING:
 
 # ========== Global State ==========
 
-_global_service: "DatabaseService | None" = None
+_global_service: DatabaseService | None = None
 
 
-def get_service() -> "DatabaseService | None":
+def get_service() -> DatabaseService | None:
     """Get the global database service instance."""
     return _global_service
 
 
-def set_service(service: "DatabaseService") -> None:
+def set_service(service: DatabaseService) -> None:
     """Set the global database service instance."""
     global _global_service
     _global_service = service
@@ -57,12 +58,12 @@ def clear_service() -> None:
 
 
 # Convenience aliases for backward compatibility
-def get_database_service() -> "DatabaseService | None":
+def get_database_service() -> DatabaseService | None:
     """Get the global database service (alias for get_service)."""
     return _global_service
 
 
-def set_database_service(service: "DatabaseService") -> None:
+def set_database_service(service: DatabaseService) -> None:
     """Set the global database service (alias for set_service)."""
     set_service(service)
 
@@ -655,7 +656,7 @@ class DatabaseService:
 
     # ========== Context Manager ==========
 
-    def __enter__(self) -> 'DatabaseService':
+    def __enter__(self) -> DatabaseService:
         """Enter context manager."""
         return self
 

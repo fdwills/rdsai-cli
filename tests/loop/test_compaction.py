@@ -1,9 +1,11 @@
 """Tests for loop.compaction module."""
 
-import pytest
 from unittest.mock import MagicMock, patch
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, BaseMessage
-from loop.compaction import ChainCompaction, count_tokens, _message_to_string
+
+import pytest
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+
+from loop.compaction import ChainCompaction, _message_to_string, count_tokens
 
 
 class TestMessageToString:

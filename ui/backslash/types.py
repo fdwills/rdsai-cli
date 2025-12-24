@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
+from collections.abc import Callable
 
 if TYPE_CHECKING:
     from database import DatabaseService
@@ -30,7 +31,7 @@ class CommandCategory(Enum):
 @dataclass
 class CommandContext:
     """Context passed to command execution."""
-    db_service: "DatabaseService | None"
+    db_service: DatabaseService | None
     sql_buffer: str = ""           # Current SQL buffer (for SQL_SUFFIX commands)
     args: str = ""                 # Command arguments
     raw_input: str = ""            # Original raw input

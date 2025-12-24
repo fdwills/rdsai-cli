@@ -1,13 +1,14 @@
 """Tests for loop.context module."""
 
 from unittest.mock import patch
+
 from loop.context import (
+    DATABASE_REMINDER,
+    ContextEntry,
     ContextManager,
     ContextType,
-    ContextEntry,
-    SessionState,
     InjectedContext,
-    DATABASE_REMINDER,
+    SessionState,
 )
 
 

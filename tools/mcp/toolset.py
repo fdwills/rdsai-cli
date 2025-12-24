@@ -182,7 +182,7 @@ class MCPTool(BaseTool[BaseModel]):
 
 
 
-async def connect_and_load_tools(server: "MCPServerConfig") -> list[MCPTool]:
+async def connect_and_load_tools(server: MCPServerConfig) -> list[MCPTool]:
     """Connect to an MCP server and load its tools.
 
     Args:

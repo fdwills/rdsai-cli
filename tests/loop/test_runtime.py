@@ -1,11 +1,13 @@
 """Tests for loop.runtime module."""
 
-import pytest
-from unittest.mock import MagicMock
 from datetime import datetime
-from loop.runtime import Runtime, BuiltinSystemPromptArgs
+from unittest.mock import MagicMock
+
+import pytest
+
 from config import Config, Session
 from llm.llm import LLM
+from loop.runtime import BuiltinSystemPromptArgs, Runtime
 
 
 class TestBuiltinSystemPromptArgs:

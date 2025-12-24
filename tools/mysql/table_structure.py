@@ -1,7 +1,7 @@
 """MySQL table structure tool for analyzing table schema."""
 
 from pathlib import Path
-from typing import Any, Dict, override
+from typing import Any, override
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +23,7 @@ class TableStructure(MySQLToolBase):
         super().__init__(builtin_args, **kwargs)
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Execute SHOW CREATE TABLE to get table structure."""
         if not params.table_name.strip():
             return {"error": "Table name is required", "brief": "Table name is required"}

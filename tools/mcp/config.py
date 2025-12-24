@@ -49,7 +49,7 @@ class MCPServerConfig(BaseModel):
     )
 
     @model_validator(mode="after")
-    def validate_transport_config(self) -> "MCPServerConfig":
+    def validate_transport_config(self) -> MCPServerConfig:
         """Validate that required fields are set for the transport type."""
         if self.transport == "stdio":
             if not self.command:
@@ -74,7 +74,7 @@ class MCPConfig(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
 
     @model_validator(mode="after")
-    def validate_unique_names(self) -> "MCPConfig":
+    def validate_unique_names(self) -> MCPConfig:
         """Ensure all server names are unique."""
         names = [s.name for s in self.servers]
         if len(names) != len(set(names)):

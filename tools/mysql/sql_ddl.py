@@ -1,7 +1,7 @@
 """MySQL DDL modification tool for executing SQL changes like CREATE INDEX, etc."""
 
 from pathlib import Path
-from typing import Any, Dict, override
+from typing import Any, override
 
 from pydantic import BaseModel, Field
 from loop.runtime import BuiltinSystemPromptArgs
@@ -83,7 +83,7 @@ class DDLExecutor(MySQLToolBase):
         return False, "Only DDL statements (CREATE INDEX, ALTER TABLE, etc.) are allowed"
 
     @override
-    async def _execute_tool(self, params: Params) -> Dict[str, Any]:
+    async def _execute_tool(self, params: Params) -> dict[str, Any]:
         """Execute the SQL DDL modification.
 
         Note: User approval is handled by LangGraph's interrupt mechanism

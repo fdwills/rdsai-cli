@@ -1,8 +1,9 @@
 """Tests for loop.nodes module."""
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+
 from loop.nodes import (
-    needs_approval,
     get_tool_description,
+    needs_approval,
     should_continue,
 )
 from loop.state import AgentState

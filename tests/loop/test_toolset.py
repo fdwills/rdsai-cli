@@ -2,18 +2,19 @@
 
 import pytest
 from pydantic import BaseModel
+
 from loop.toolset import (
     BaseTool,
-    Toolset,
-    SimpleToolset,
     DynamicToolset,
-    ToolOk,
+    SimpleToolset,
     ToolError,
-    ToolRuntimeError,
+    ToolOk,
     ToolResult,
+    ToolRuntimeError,
+    Toolset,
     get_current_tool_call_or_none,
 )
-from loop.types import ToolCall, FunctionBody
+from loop.types import FunctionBody, ToolCall
 
 
 class MockParams(BaseModel):

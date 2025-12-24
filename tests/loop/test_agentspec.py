@@ -1,15 +1,17 @@
 """Tests for loop.agentspec module."""
 
-import pytest
 import tempfile
-import yaml
 from pathlib import Path
+
+import pytest
+import yaml
+
 from loop.agentspec import (
+    DEFAULT_AGENT_FILE,
     AgentSpec,
+    AgentSpecError,
     ResolvedAgentSpec,
     load_agent_spec,
-    AgentSpecError,
-    DEFAULT_AGENT_FILE,
 )
 
 

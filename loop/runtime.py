@@ -34,7 +34,7 @@ class Runtime:
     llm: LLM | None
     session: Session
     builtin_args: BuiltinSystemPromptArgs
-    mcp_config: "MCPConfig | None" = field(default=None)
+    mcp_config: MCPConfig | None = field(default=None)
     yolo: bool = field(default=False)
 
     def set_llm(self, llm: LLM | None) -> None:
@@ -58,7 +58,7 @@ class Runtime:
         config: Config,
         llm: LLM | None,
         session: Session,
-        mcp_config: "MCPConfig | None" = None,
+        mcp_config: MCPConfig | None = None,
         yolo: bool = False,
     ) -> Runtime:
         """Create a new runtime instance.

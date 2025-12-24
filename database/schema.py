@@ -5,7 +5,8 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, Generator, List, Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
+from collections.abc import Generator
 
 from utils.logging import logger
 
@@ -31,7 +32,7 @@ class ColumnInfo:
 class IndexInfo:
     """Information about a table index."""
     name: str
-    columns: List[str]
+    columns: list[str]
     is_unique: bool
     index_type: str  # BTREE, HASH, FULLTEXT, etc.
 
@@ -55,9 +56,9 @@ class TableInfo:
     row_count_estimate: int
     data_size_bytes: int
     index_size_bytes: int
-    columns: List[ColumnInfo] = field(default_factory=list)
-    indexes: List[IndexInfo] = field(default_factory=list)
-    primary_key_columns: List[str] = field(default_factory=list)
+    columns: list[ColumnInfo] = field(default_factory=list)
+    indexes: list[IndexInfo] = field(default_factory=list)
+    primary_key_columns: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -78,13 +79,13 @@ class DatabaseSchemaSnapshot:
     database_name: str
     host: str
     port: int
-    tables: List[TableInfo]
-    foreign_keys: List[ForeignKeyInfo]
+    tables: list[TableInfo]
+    foreign_keys: list[ForeignKeyInfo]
     statistics: DatabaseStatistics
     collected_at: datetime
     schema_hash: str
 
-    def get_tables_by_row_count(self, descending: bool = True) -> List[TableInfo]:
+    def get_tables_by_row_count(self, descending: bool = True) -> list[TableInfo]:
         """Get tables sorted by estimated row count."""
         return sorted(
             self.tables,
@@ -93,7 +94,7 @@ class DatabaseSchemaSnapshot:
         )
 
     @staticmethod
-    def compute_schema_hash(tables: List[TableInfo]) -> str:
+    def compute_schema_hash(tables: list[TableInfo]) -> str:
         """Compute a hash of the schema for change detection.
 
         The hash is based on table names and column definitions.
@@ -135,7 +136,7 @@ class DatabaseExplorer:
         snapshot = explorer.explore()
     """
 
-    def __init__(self, db_service: "DatabaseService"):
+    def __init__(self, db_service: DatabaseService):
         """Initialize explorer with a database service.
 
         Args:
@@ -143,7 +144,7 @@ class DatabaseExplorer:
         """
         self._db_service = db_service
 
-    def _execute_query(self, sql: str) -> tuple[List[str], List[tuple]]:
+    def _execute_query(self, sql: str) -> tuple[list[str], list[tuple]]:
         """Execute a query and return (columns, rows).
 
         Returns:
@@ -179,7 +180,7 @@ class DatabaseExplorer:
         return snapshot
 
     def explore_iter(
-        self, table_filter: Optional[List[str]] = None
+        self, table_filter: Optional[list[str]] = None
     ) -> Generator[TableExploreProgress | DatabaseSchemaSnapshot, None, None]:
         """Explore the database with progress updates.
 
@@ -217,7 +218,7 @@ class DatabaseExplorer:
         foreign_keys = self._collect_foreign_keys(database_name, table_filter)
 
         total = len(tables)
-        completed_tables: List[TableInfo] = []
+        completed_tables: list[TableInfo] = []
 
         # Explore each table with progress updates
         for i, table in enumerate(tables, 1):
@@ -265,7 +266,7 @@ class DatabaseExplorer:
             schema_hash=schema_hash,
         )
 
-    def _collect_tables(self, database_name: str, table_filter: Optional[List[str]] = None) -> List[TableInfo]:
+    def _collect_tables(self, database_name: str, table_filter: Optional[list[str]] = None) -> list[TableInfo]:
         """Collect basic table information from information_schema.
 
         Args:
@@ -323,7 +324,7 @@ class DatabaseExplorer:
 
         return tables
 
-    def _collect_columns(self, database_name: str, table_name: str) -> List[ColumnInfo]:
+    def _collect_columns(self, database_name: str, table_name: str) -> list[ColumnInfo]:
         """Collect column information for a specific table."""
         sql = f"""
             SELECT
@@ -355,13 +356,13 @@ class DatabaseExplorer:
 
         return result
 
-    def _collect_indexes(self, table_name: str) -> List[IndexInfo]:
+    def _collect_indexes(self, table_name: str) -> list[IndexInfo]:
         """Collect index information for a specific table."""
         sql = f"SHOW INDEX FROM `{table_name}`"
         columns, rows = self._execute_query(sql)
 
         # Group by index name
-        index_map: Dict[str, IndexInfo] = {}
+        index_map: dict[str, IndexInfo] = {}
         for row in rows:
             # SHOW INDEX columns: Table, Non_unique, Key_name, Seq_in_index,
             # Column_name, Collation, Cardinality, Sub_part, Packed, Null,
@@ -385,8 +386,8 @@ class DatabaseExplorer:
         return list(index_map.values())
 
     def _collect_foreign_keys(
-        self, database_name: str, table_filter: Optional[List[str]] = None
-    ) -> List[ForeignKeyInfo]:
+        self, database_name: str, table_filter: Optional[list[str]] = None
+    ) -> list[ForeignKeyInfo]:
         """Collect foreign key relationships.
 
         Args:

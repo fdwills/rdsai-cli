@@ -210,7 +210,7 @@ class ContextManager:
         *,
         tag: Optional[str] = None,
         priority: int = 0,
-    ) -> "ContextManager":
+    ) -> ContextManager:
         """Add or update a context entry.
 
         Args:
@@ -275,7 +275,7 @@ class ContextManager:
     # Convenience Methods for Common Context Types
     # =========================================================================
 
-    def set_database_context(self, content: str) -> "ContextManager":
+    def set_database_context(self, content: str) -> ContextManager:
         """Set database connection context.
 
         This contains connection information (host, port, user, current database).
@@ -283,7 +283,7 @@ class ContextManager:
         """
         return self.add(ContextType.DATABASE, content)
 
-    def set_query_context(self, content: str) -> "ContextManager":
+    def set_query_context(self, content: str) -> ContextManager:
         """Set query context (recent SQL results).
 
         This is updated per-turn based on user's SQL executions.

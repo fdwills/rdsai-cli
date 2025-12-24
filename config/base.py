@@ -78,10 +78,10 @@ class Session:
     """
 
     id: str
-    _db_connection: "DatabaseConnectionContext | None" = field(default=None, repr=False)
+    _db_connection: DatabaseConnectionContext | None = field(default=None, repr=False)
 
     @property
-    def db_connection(self) -> "DatabaseConnectionContext | None":
+    def db_connection(self) -> DatabaseConnectionContext | None:
         """Get the current database connection."""
         return self._db_connection
 
@@ -101,7 +101,7 @@ class Session:
         ssl_cert: str | None = None,
         ssl_key: str | None = None,
         ssl_mode: str | None = None,
-    ) -> "DatabaseConnectionContext":
+    ) -> DatabaseConnectionContext:
         """Connect to a database.
 
         If already connected, disconnects first.
