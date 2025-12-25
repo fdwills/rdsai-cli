@@ -356,6 +356,12 @@ class TestDatabaseService:
         service = DatabaseService()
         assert service._classify_query("UNKNOWN COMMAND") == QueryType.OTHER
 
+    def test_classify_query_with_cte(self):
+        """Test query classification for CTE (WITH clause)."""
+        service = DatabaseService()
+        assert service._classify_query("WITH cte AS (SELECT 1) SELECT * FROM cte") == QueryType.SELECT
+        assert service._classify_query("WITH RECURSIVE cte AS (SELECT 1) SELECT * FROM cte") == QueryType.SELECT
+
     def test_classify_query_empty(self):
         """Test query classification for empty query."""
         service = DatabaseService()

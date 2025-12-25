@@ -168,6 +168,7 @@ class DatabaseService:
 
     # Query type prefixes for efficient classification
     _QUERY_TYPE_PREFIXES: tuple[tuple[str, QueryType], ...] = (
+        ("WITH", QueryType.SELECT),  # CTE queries return result sets like SELECT
         ("SELECT", QueryType.SELECT),
         ("INSERT", QueryType.INSERT),
         ("UPDATE", QueryType.UPDATE),
