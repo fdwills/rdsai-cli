@@ -356,6 +356,12 @@ class TestDatabaseService:
         service = DatabaseService()
         assert service._classify_query("UNKNOWN COMMAND") == QueryType.OTHER
 
+    def test_classify_query_with_cte(self):
+        """Test query classification for CTE (WITH clause)."""
+        service = DatabaseService()
+        assert service._classify_query("WITH cte AS (SELECT 1) SELECT * FROM cte") == QueryType.SELECT
+        assert service._classify_query("WITH RECURSIVE cte AS (SELECT 1) SELECT * FROM cte") == QueryType.SELECT
+
     def test_classify_query_empty(self):
         """Test query classification for empty query."""
         service = DatabaseService()
@@ -413,6 +419,24 @@ class TestDatabaseService:
         assert service.is_sql_statement("INSERT INTO users VALUES (1)") is True
         assert service.is_sql_statement("") is False
         assert service.is_sql_statement("   ") is False
+
+    def test_is_sql_statement_show_with_modifiers(self):
+        """Test SHOW statements with optional modifiers (FULL, GLOBAL, SESSION, etc)."""
+        service = DatabaseService()
+        # SHOW with modifiers should be recognized as SQL
+        assert service.is_sql_statement("SHOW FULL PROCESSLIST") is True
+        assert service.is_sql_statement("SHOW GLOBAL VARIABLES") is True
+        assert service.is_sql_statement("SHOW SESSION STATUS") is True
+        assert service.is_sql_statement("SHOW EXTENDED TABLES") is True
+        assert service.is_sql_statement("SHOW FULL TABLES FROM information_schema") is True
+        assert service.is_sql_statement("SHOW GLOBAL VARIABLES LIKE 'max_connections'") is True
+        # Multiple modifiers
+        assert service.is_sql_statement("SHOW FULL GLOBAL PROCESSLIST") is True
+        # SHOW with invalid target should still be rejected
+        assert service.is_sql_statement("SHOW me the tables") is False
+        # SHOW alone should be rejected
+        assert service.is_sql_statement("SHOW") is False
+        assert service.is_sql_statement("SHOW FULL") is False
 
     def test_execute_query_select(self):
         """Test executing SELECT query."""
