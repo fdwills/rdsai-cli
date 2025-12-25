@@ -192,6 +192,38 @@ class DatabaseService:
         ("REPLACE", QueryType.REPLACE),
     )
 
+    # Optional modifiers that can appear before SHOW target keywords
+    _OPTIONAL_MODIFIERS: frozenset[str] = frozenset(
+        ["FULL", "EXTENDED", "GLOBAL", "SESSION", "MASTER", "SLAVE", "REPLICA"]
+    )
+
+    # Valid SHOW statement target keywords
+    _VALID_SHOW_TARGETS: frozenset[str] = frozenset(
+        [
+            "TABLES",
+            "SCHEMAS",  # Alias for DATABASES
+            "CREATE",
+            "INDEX",
+            "DATABASES",
+            "PROCESSLIST",
+            "VARIABLES",
+            "STATUS",
+            "ENGINE",
+            "SLAVE",
+            "REPLICA",
+            "GRANTS",
+            "WARNINGS",
+            "ERRORS",
+            "TABLE",
+            "COLUMNS",
+            "FIELDS",
+            "KEYS",
+            "TRIGGERS",
+            "PROCEDURE",
+            "FUNCTION",
+        ]
+    )
+
     def __init__(self):
         """Initialize database service."""
         self._active_connection: DatabaseClient | None = None
@@ -494,7 +526,7 @@ class DatabaseService:
         validates that it's followed by a valid SHOW target to prevent natural language
         queries like "show me slow queries" from being treated as SQL.
         """
-        if not command or not command.strip():
+        if not command:
             return False
 
         # Step 1: Quick check - does it start with a SQL keyword?
@@ -506,60 +538,24 @@ class DatabaseService:
         # SHOW is commonly used in natural language (e.g., "show me...")
         # so we need to validate it more strictly
         if query_type == QueryType.SHOW:
+            # Cache string processing result to avoid repeated operations
             command_upper = command.strip().upper()
             rest = command_upper[4:].strip()  # After "SHOW"
 
             if not rest:
                 return False  # "SHOW" alone is incomplete
 
-            # List of optional modifiers that can appear before the actual SHOW target
-            # These are stripped to find the real target keyword
-            optional_modifiers = ["FULL", "EXTENDED", "GLOBAL", "SESSION", "MASTER", "SLAVE", "REPLICA"]
-
-            # Strip leading modifiers to find the actual target
+            # Use efficient token parsing with next() and generator expression
             tokens = rest.split()
-            target_idx = 0
-            for i, token in enumerate(tokens):
-                if token not in optional_modifiers:
-                    target_idx = i
-                    break
+            target = next(
+                (token.rstrip(";") for token in tokens if token not in self._OPTIONAL_MODIFIERS),
+                None,
+            )
 
-            if target_idx >= len(tokens):
+            if target is None:
                 return False  # Only modifiers, no actual target
 
-            target = tokens[target_idx]
-
-            # Check if followed by valid SHOW targets
-            valid_show_targets = [
-                "TABLES",
-                "SCHEMAS",  # Alias for DATABASES
-                "CREATE",
-                "INDEX",
-                "DATABASES",
-                "PROCESSLIST",
-                "VARIABLES",
-                "STATUS",
-                "ENGINE",
-                "SLAVE",
-                "REPLICA",
-                "GRANTS",
-                "WARNINGS",
-                "ERRORS",
-                "TABLE",
-                "COLUMNS",
-                "FIELDS",
-                "KEYS",
-                "TRIGGERS",
-                "PROCEDURE",
-                "FUNCTION",
-            ]
-
-            # Check if the actual target is valid
-            if target in valid_show_targets:
-                return True  # Valid SHOW statement
-
-            # Not a valid SHOW target - likely natural language
-            return False
+            return target in self._VALID_SHOW_TARGETS
 
         # Step 3: For other SQL keywords, use basic keyword check
         # This maintains backward compatibility

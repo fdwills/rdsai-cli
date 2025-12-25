@@ -432,6 +432,7 @@ class TestDatabaseService:
         assert service.is_sql_statement("SHOW GLOBAL VARIABLES LIKE 'max_connections'") is True
         # Multiple modifiers
         assert service.is_sql_statement("SHOW FULL GLOBAL PROCESSLIST") is True
+        assert service.is_sql_statement("SHOW FULL GLOBAL PROCESSLIST;") is True
         # SHOW with invalid target should still be rejected
         assert service.is_sql_statement("SHOW me the tables") is False
         # SHOW alone should be rejected
