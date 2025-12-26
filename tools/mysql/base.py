@@ -42,7 +42,7 @@ class MySQLToolBase(BaseTool):
 
     def _get_mysql_version(self) -> str | None:
         """Get MySQL server version string.
-        
+
         Returns:
             Version string (e.g., "8.0.22") or None if unable to determine
         """
@@ -57,12 +57,12 @@ class MySQLToolBase(BaseTool):
 
     def _is_mysql_version_at_least(self, major: int, minor: int, patch: int) -> bool:
         """Check if MySQL version is at least the specified version.
-        
+
         Args:
             major: Major version number (e.g., 8)
             minor: Minor version number (e.g., 0)
             patch: Patch version number (e.g., 22)
-            
+
         Returns:
             True if version is at least the specified version, False otherwise
         """
@@ -70,14 +70,14 @@ class MySQLToolBase(BaseTool):
         if not version_str:
             # If we can't determine version, assume older version for backward compatibility
             return False
-        
+
         # Parse version string (e.g., "8.0.22", "8.0.22-0ubuntu0.20.04.1")
         match = re.match(r"(\d+)\.(\d+)\.(\d+)", version_str)
         if not match:
             return False
-        
+
         v_major, v_minor, v_patch = int(match.group(1)), int(match.group(2)), int(match.group(3))
-        
+
         if v_major > major:
             return True
         if v_major < major:
