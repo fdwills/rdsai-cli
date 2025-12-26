@@ -32,7 +32,7 @@ class ReplicaStatus(MySQLToolBase):
             sql = "SHOW REPLICA STATUS"
         else:
             sql = "SHOW SLAVE STATUS"
-        
+
         columns, rows = self._execute_query(sql)
 
         return {
