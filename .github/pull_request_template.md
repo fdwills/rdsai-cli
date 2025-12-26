@@ -1,8 +1,8 @@
 > **⚠️ Important: Before submitting this PR, please ensure:**
-> - [ ] Your code follows the project's style guidelines
-> - [ ] You have performed a self-review of your changes
-> - [ ] Related issues are linked (if applicable), Fixes #123
-> - [ ] You have run `./dev/code-style.sh --check` to verify code style, and `./dev/pytest.sh` to ensure all tests pass
+> - Your code follows the project's style guidelines
+> - You have performed a self-review of your changes
+> - Related issues are linked (if applicable), Fixes #123
+> - You have run `./dev/code-style.sh --check` to verify code style, and `./dev/pytest.sh` to ensure all tests pass
 
 
 ## Description
