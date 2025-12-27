@@ -34,8 +34,13 @@ python -m cli
 
 ### Running Tests
 
+You can use the convenience script or run pytest directly:
+
 ```bash
-# Run all tests
+# Using the convenience script (recommended)
+./dev/pytest.sh
+
+# Or run pytest directly
 uv run pytest
 
 # Run specific test file
@@ -55,9 +60,17 @@ uv run pytest --cov=. --cov-report=html
 
 ### Code Quality
 
-We use [Ruff](https://docs.astral.sh/ruff/) for linting and formatting, and [mypy](https://mypy.readthedocs.io/) for type checking:
+We use [Ruff](https://docs.astral.sh/ruff/) for linting and formatting:
 
 ```bash
+# Using the convenience script (recommended)
+# Auto-fix linting and formatting issues
+./dev/code-style.sh
+
+# Check only (without fixing)
+./dev/code-style.sh --check
+
+# Or run commands directly
 # Check for linting errors (without fixing)
 uv run ruff check .
 
@@ -70,11 +83,8 @@ uv run ruff format --check .
 # Auto-format code
 uv run ruff format .
 
-# Type checking (strict mode enabled)
-uv run mypy .
-
 # Run all checks at once
-uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run pytest
+uv run ruff check . && uv run ruff format --check . && uv run pytest
 ```
 
 **CI/CD:** Our GitHub Actions workflows automatically run these checks on every push and PR:
@@ -86,7 +96,7 @@ uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run p
 ### General Guidelines
 
 - Follow [PEP 8](https://pep8.org/) conventions
-- Use type hints for **all** function signatures (required by mypy strict mode)
+- Use type hints for **all** function signatures
 - Write docstrings for public functions and classes
 - Keep line length under 120 characters
 - Use meaningful variable and function names
@@ -109,17 +119,11 @@ uv run ruff check . && uv run ruff format --check . && uv run mypy . && uv run p
 5. **Write tests** — Ensure your changes are covered with appropriate tests
 6. **Run all checks locally** — Ensure everything passes before submitting:
    ```bash
-   # Fix linting issues
-   uv run ruff check --fix .
-   
-   # Format code
-   uv run ruff format .
-   
-   # Check types
-   uv run mypy .
+   # Fix linting and formatting issues
+   ./dev/code-style.sh
    
    # Run tests
-   uv run pytest
+   ./dev/pytest.sh
    ```
 
 ### Submitting
@@ -165,10 +169,8 @@ Before submitting your PR, ensure:
 
 - [ ] Code follows style guidelines
 - [ ] All type hints are present and correct
-- [ ] Tests pass locally (`uv run pytest`)
-- [ ] Linting passes (`uv run ruff check .`)
-- [ ] Formatting is correct (`uv run ruff format --check .`)
-- [ ] Type checking passes (`uv run mypy .`)
+- [ ] Tests pass locally (`./dev/pytest.sh`)
+- [ ] Code style checks pass (`./dev/code-style.sh --check`)
 - [ ] Documentation is updated if needed
 - [ ] Commit messages are clear and descriptive
 
