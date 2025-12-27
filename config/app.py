@@ -42,6 +42,11 @@ class Config(BaseModel):
     services: Services = Field(default_factory=Services, description="Services configuration")
     language: str = Field(default="en", description="Language preference (en/zh)")
 
+    # Embedding model configuration
+    default_embedding_model: str = Field(default="", description="Default embedding model to use")
+    embedding_models: dict[str, LLMModel] = Field(default_factory=dict, description="List of embedding models")
+    embedding_providers: dict[str, LLMProvider] = Field(default_factory=dict, description="List of embedding providers")
+
     @model_validator(mode="after")
     def validate_model(self) -> Self:
         if self.default_model and self.default_model not in self.models:
@@ -49,6 +54,21 @@ class Config(BaseModel):
         for model in self.models.values():
             if model.provider not in self.providers:
                 raise ValueError(f"Provider {model.provider} not found in providers")
+
+        # Validate embedding models
+        if self.default_embedding_model:
+            if self.default_embedding_model not in self.embedding_models:
+                raise ValueError(
+                    f"Default embedding model {self.default_embedding_model} not found in embedding_models"
+                )
+            embedding_model = self.embedding_models[self.default_embedding_model]
+            if embedding_model.provider not in self.embedding_providers:
+                raise ValueError(f"Embedding provider {embedding_model.provider} not found in embedding_providers")
+
+        for model in self.embedding_models.values():
+            if model.provider not in self.embedding_providers:
+                raise ValueError(f"Embedding provider {model.provider} not found in embedding_providers")
+
         if self.language not in ("en", "zh"):
             raise ValueError(f"Language must be 'en' or 'zh', got '{self.language}'")
         return self
@@ -62,6 +82,9 @@ def get_default_config() -> Config:
         providers={},
         services=Services(),
         language="en",
+        # default_embedding_model="",
+        # embedding_models={},
+        # embedding_providers={},
     )
 
 
