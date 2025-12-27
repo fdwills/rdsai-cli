@@ -217,3 +217,15 @@ class ConnectionContext:
     def welcome_level(self) -> str:
         """Get log level for welcome message."""
         return "WARN" if self.status == ConnectionStatus.FAILED.value else "INFO"
+
+    @property
+    def vector_capability_enabled(self) -> bool:
+        """Check if vector capability is enabled.
+
+        Returns:
+            True if vector capability is enabled, False otherwise.
+            Returns False if not connected or db_service is None.
+        """
+        if not self.is_connected or self.db_service is None:
+            return False
+        return self.db_service.has_vector_capability()

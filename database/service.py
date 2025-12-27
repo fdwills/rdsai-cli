@@ -12,7 +12,7 @@ import getpass
 import re
 from datetime import datetime
 from threading import Lock
-from typing import Any, TYPE_CHECKING
+from typing import Any, Literal, TYPE_CHECKING
 from collections.abc import Callable
 
 from .types import (
@@ -234,6 +234,9 @@ class DatabaseService:
         # Internal state
         self._current_database: str | None = None
         self._last_query_context: LastQueryContext | None = None
+        # Vector capability state
+        self._vector_capability_status: Literal["UNKNOWN", "ENABLED", "DISABLED"] = "UNKNOWN"
+        self._vector_capability_error: str | None = None
 
     # ========== Properties ==========
 
@@ -241,6 +244,57 @@ class DatabaseService:
     def current_database(self) -> str | None:
         """Get current database name."""
         return self._current_database
+
+    # ========== Vector Capability ==========
+
+    def _detect_vector_capability(self) -> None:
+        """Detect vector capability by checking vidx_disabled variable.
+
+        Sets _vector_capability_status to:
+        - ENABLED: if vidx_disabled='OFF'
+        - DISABLED: if vidx_disabled!='OFF' or variable not found
+        - UNKNOWN: if detection fails with exception
+        """
+        if not self._active_connection:
+            self._vector_capability_status = "UNKNOWN"
+            self._vector_capability_error = "No active connection"
+            return
+
+        try:
+            self._active_connection.execute("SHOW VARIABLES LIKE 'vidx_disabled'")
+            rows = self._active_connection.fetchall()
+
+            if not rows:
+                # Variable not found - vector capability not available
+                self._vector_capability_status = "DISABLED"
+                self._vector_capability_error = None
+                logger.info("Vector capability detected: DISABLED (variable not found)")
+                return
+
+            # Get the value from the second column (Variable_name, Value)
+            value = rows[0][1].upper() if rows[0][1] else ""
+            if value == "OFF":
+                self._vector_capability_status = "ENABLED"
+                self._vector_capability_error = None
+                logger.info("Vector capability detected: ENABLED (vidx_disabled=OFF)")
+            else:
+                self._vector_capability_status = "DISABLED"
+                self._vector_capability_error = None
+                logger.info(f"Vector capability detected: DISABLED (vidx_disabled={rows[0][1]})")
+
+        except Exception as e:
+            # Detection failed - mark as unknown
+            self._vector_capability_status = "UNKNOWN"
+            self._vector_capability_error = str(e)
+            logger.warning("Vector capability detection failed: {error}", error=e)
+
+    def has_vector_capability(self) -> bool:
+        """Check if vector capability is enabled.
+
+        Returns:
+            True if vector capability is ENABLED, False otherwise.
+        """
+        return self._vector_capability_status == "ENABLED"
 
     # ========== Last Query Context ==========
 
@@ -345,6 +399,9 @@ class DatabaseService:
                     logger.warning(f"Failed to get current database after connection: {e}")
                     self._current_database = None
 
+            # Detect vector capability
+            self._detect_vector_capability()
+
             logger.info(f"Connected to {config.engine} database at {config.host}:{config.port}")
             self._notify_schema_change()
 
@@ -369,6 +426,9 @@ class DatabaseService:
                     self._connection_config = None
                     self._connection_id = None
                     self._current_database = None
+                    # Clear vector capability state
+                    self._vector_capability_status = "UNKNOWN"
+                    self._vector_capability_error = None
 
         self._notify_schema_change()
 

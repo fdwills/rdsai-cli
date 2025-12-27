@@ -21,7 +21,6 @@ type ProviderType = Literal[
     "deepseek",
     "anthropic",
     "gemini",
-    "_chaos",
 ]
 """Supported LLM provider types."""
 

@@ -178,6 +178,8 @@ async def setup(app: ShellREPL, args: list[str]):
 
     config = load_config()
     config.language = result.language
+
+    # Save LLM configuration
     config.providers[result.platform.id] = LLMProvider(
         type=result.platform.id,
         base_url=result.base_url,
@@ -190,6 +192,36 @@ async def setup(app: ShellREPL, args: list[str]):
         max_output_tokens=result.max_output_tokens,
     )
     config.default_model = result.model_name
+
+    # Save embedding configuration if provided
+    # if result.embedding_platform and result.embedding_model_name:
+    #     embedding_provider_id = result.embedding_platform.id
+    #     if result.embedding_api_key:
+    #         # Use provided API key (different from LLM)
+    #         config.embedding_providers[embedding_provider_id] = LLMProvider(
+    #             type=result.embedding_platform.id,
+    #             base_url=result.embedding_base_url or result.embedding_platform.default_base_url,
+    #             api_key=result.embedding_api_key,
+    #         )
+    #     else:
+    #         # Reuse LLM provider configuration
+    #         if embedding_provider_id == result.platform.id:
+    #             # Same provider - reuse the provider config
+    #             config.embedding_providers[embedding_provider_id] = config.providers[result.platform.id]
+    #         else:
+    #             # Different provider but no API key provided - use LLM provider as fallback
+    #             config.embedding_providers[embedding_provider_id] = LLMProvider(
+    #                 type=result.embedding_platform.id,
+    #                 base_url=result.embedding_base_url or result.embedding_platform.default_base_url,
+    #                 api_key=result.api_key,  # Reuse LLM API key
+    #             )
+    #
+    #     config.embedding_models[result.embedding_model_name] = LLMModel(
+    #         provider=embedding_provider_id,
+    #         model=result.embedding_model_name,
+    #         max_context_size=0,  # Embedding models don't need context size
+    #     )
+    #     config.default_embedding_model = result.embedding_model_name
 
     save_config(config)
     console.print("[green]✓[/green] Configuration saved! Reloading...")
@@ -209,6 +241,11 @@ class _SetupResult(NamedTuple):
     model_name: str
     max_context_size: int
     max_output_tokens: int | None = None
+    # Embedding configuration (optional)
+    embedding_platform: _Platform | None = None
+    embedding_base_url: str | None = None
+    embedding_api_key: SecretStr | None = None
+    embedding_model_name: str | None = None
 
 
 @dataclass
@@ -449,7 +486,7 @@ async def _setup() -> _SetupResult | None:
         console.print("[yellow]Setup cancelled[/yellow]")
         return None
 
-    language = language_options["English (en)"]
+    language = language_options[language_display]
 
     # Step 2: Select platform
     platform_name = await _prompt_choice(
@@ -595,6 +632,23 @@ async def _setup() -> _SetupResult | None:
             if max_output_tokens_str:
                 max_output_tokens = int(max_output_tokens_str)
 
+            # # Step 4: Configure embedding model (optional)
+            # console.print()
+            # console.print("[bold]Configure Embedding Model[/bold]")
+            # console.print("[dim]Embedding model is used for vector similarity search and memory features.[/dim]")
+            #
+            # configure_embedding = await _prompt_choice(
+            #     header="Do you want to configure an embedding model?",
+            #     choices=["Yes, configure now", "No, skip for now"],
+            # )
+
+            embedding_result = None
+            # if configure_embedding == "Yes, configure now":
+            #     embedding_result = await _configure_embedding(platform)
+            #     if embedding_result is None:
+            #         # User cancelled embedding configuration, but continue with LLM setup
+            #         console.print("[yellow]Embedding configuration skipped[/yellow]")
+
             return _SetupResult(
                 language=language,
                 platform=platform,
@@ -603,6 +657,10 @@ async def _setup() -> _SetupResult | None:
                 model_name=model_name,
                 max_context_size=max_context_size,
                 max_output_tokens=max_output_tokens,
+                embedding_platform=embedding_result.platform if embedding_result else None,
+                embedding_base_url=embedding_result.base_url if embedding_result else None,
+                embedding_api_key=embedding_result.api_key if embedding_result else None,
+                embedding_model_name=embedding_result.model_name if embedding_result else None,
             )
         elif confirm == "No, edit again":
             continue
@@ -668,6 +726,141 @@ async def _fetch_max_context_size(base_url: str, api_key: str, model_name: str, 
 
     # API succeeded but didn't provide context size
     return None
+
+
+class _EmbeddingSetupResult(NamedTuple):
+    """Result of embedding model configuration."""
+
+    platform: _Platform
+    base_url: str
+    api_key: SecretStr | None  # None means reuse LLM API key
+    model_name: str
+
+
+async def _configure_embedding(llm_platform: _Platform) -> _EmbeddingSetupResult | None:
+    """Configure embedding model separately from LLM.
+
+    Args:
+        llm_platform: The LLM platform that was configured
+
+    Returns:
+        EmbeddingSetupResult if configured, None if cancelled
+    """
+    # Ask if user wants to reuse LLM provider
+    reuse_provider = await _prompt_choice(
+        header=f"Use the same provider ({llm_platform.name}) for embedding?",
+        choices=["Yes, reuse provider", "No, choose different provider"],
+    )
+
+    if reuse_provider != "Yes, reuse provider":
+        # Select new provider
+        platform_name = await _prompt_choice(
+            header="Select embedding API platform",
+            choices=[p.name for p in _PLATFORMS],
+        )
+        if not platform_name:
+            return None
+        embedding_platform = next(p for p in _PLATFORMS if p.name == platform_name)
+    else:
+        embedding_platform = llm_platform
+
+    # Suggested embedding models by platform
+    embedding_model_suggestions: dict[str, list[str]] = {
+        "qwen": ["text-embedding-v2", "text-embedding-v1"],
+        "openai": ["text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002"],
+        "openai_compatible": ["text-embedding-3-small"],
+        "deepseek": ["deepseek-embedding"],
+    }
+
+    suggested_models = embedding_model_suggestions.get(embedding_platform.id, [])
+
+    # Form input for embedding configuration
+    while True:
+        fields: list[_FormField] = []
+
+        # Add base_url field only for providers that need it
+        if embedding_platform.needs_base_url:
+            fields.append(
+                _FormField(
+                    name="base_url",
+                    label="Base API URL",
+                    default_value=embedding_platform.default_base_url,
+                    placeholder="Enter API base URL...",
+                )
+            )
+
+        # Only ask for API key if using different provider
+        if embedding_platform.id != llm_platform.id:
+            fields.append(
+                _FormField(
+                    name="api_key",
+                    label="API Key",
+                    is_password=True,
+                    placeholder="Enter your API key...",
+                )
+            )
+
+        fields.append(
+            _FormField(
+                name="model_name",
+                label="Embedding Model Name",
+                default_value=suggested_models[0] if suggested_models else "",
+                placeholder="Enter embedding model name (e.g., text-embedding-v2)...",
+            )
+        )
+
+        form_result = await _run_form(
+            title=f" Configure Embedding ({embedding_platform.name}) ",
+            fields=fields,
+        )
+
+        if not form_result.submitted:
+            return None
+
+        # Validate fields
+        base_url = form_result.values.get("base_url", "").strip()
+        api_key = form_result.values.get("api_key", "").strip()
+        model_name = form_result.values.get("model_name", "").strip()
+
+        errors = []
+        if embedding_platform.needs_base_url and not base_url:
+            errors.append("Base API URL is required")
+        if embedding_platform.id != llm_platform.id and not api_key:
+            errors.append("API Key is required (different from LLM provider)")
+        if not model_name:
+            errors.append("Embedding Model Name is required")
+
+        if errors:
+            console.print("[red]Validation errors:[/red]")
+            for err in errors:
+                console.print(f"  [red]• {err}[/red]")
+            console.print()
+
+            retry = await _prompt_choice(
+                header="What would you like to do?",
+                choices=["Edit again", "Skip embedding configuration"],
+            )
+            if retry != "Edit again":
+                return None
+            continue
+
+        # Confirm configuration
+        confirm = await _prompt_choice(
+            header="Confirm embedding configuration?",
+            choices=["Yes, save", "No, edit again", "Skip embedding configuration"],
+        )
+
+        if confirm == "Yes, save":
+            return _EmbeddingSetupResult(
+                platform=embedding_platform,
+                base_url=base_url if embedding_platform.needs_base_url else "",
+                api_key=SecretStr(api_key) if api_key else None,
+                model_name=model_name,
+            )
+        elif confirm == "No, edit again":
+            continue
+        else:
+            return None
 
 
 async def _prompt_choice(*, header: str, choices: list[str]) -> str | None:

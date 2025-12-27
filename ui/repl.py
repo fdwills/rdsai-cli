@@ -224,9 +224,6 @@ class ShellREPL:
 
                     # Not SQL, route to LLM
                     await self._run_loop_command(user_input.content)
-        except Exception as e:
-            logger.exception("Unexpected error in REPL loop")
-            console.print(f"[red]Unexpected error: {e}[/red]")
         finally:
             # Clear current REPL instance on exit
             self._set_current(None)
